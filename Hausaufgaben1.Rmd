@@ -1,0 +1,25 @@
+---
+title: "ha1"
+author: "Nadine Heubes"
+date: "15 11 2020"
+output: html_document
+---
+a<-2
+b<-5
+r1<- a+b
+r2<- a-b
+r3<- a*b
+r4<- a/b
+v1<- c(7,-3,10,0.4)
+a**b
+v1<- c(7,-3,10,0.4,32)
+v1
+v2<- c("sum","difference","product","ratio","power")
+v2
+df<- data.frame(v1,v2)
+df
+colnames(df)[1]="Results"
+colnames(df)[2]="Operation"
+df
+df[3,1]
+
