@@ -1,0 +1,88 @@
+---
+title: "02 Assignment"
+author: "Nadine Heubes"
+date: "20 11 2020"
+output: html_document
+---
+
+# Unmarked Assignment: Loop and Conquer
+
+*1.Implement an if-then-else statement which prints “larger” if the number provided as variable n is larger than 1 and “equal or smaller” otherwise.*
+
+
+```{r}
+n<-2
+if (n > 1) {
+print("larger")
+}else{
+print ("equal or smaller")
+}
+```
+
+*2.Extent a copy of the above statement (i.e. copy the entire if-then-else statement and include it a second time in your script in order to preserve both versions) which returns “equal” and “smaller” explicitly in addition to “larger".*
+```{r}
+if (n > 1){
+print("larger")
+} else if(n == 1) {
+print("equal")
+} else { 
+print("smaller")
+}
+```
+
+*3.Implement a if-then-else statement which prints “even” if the number provided as variable n is even and which prints “odd” otherwise.*
+```{r}
+if (n %% 2 == 0){
+print ("even")
+} else {
+print("odd")
+}
+```
+
+
+*4.Copy the extended larger/equal/smaller if-then-else statement and include it into a for loop which shows that all three options are actually implemented in a correct manner by iterating over n from a number which is smaller 1, exactly 1 and larger than 1.*
+
+```{r}
+i<- c(0,1,2)
+for (n in i){
+if(n>1){
+print("larger")
+}else if (n ==1){
+print ("equal")
+}else{
+print ("smaller")
+}
+}
+```
+*5.Extent a copy of the above loop and modify the loop and if-then-else statement in such a way, that the information on “larger” etc. is not printed on the screen but saved within a vector (i.e. a variable which will hold all three statements in the end). Print the content of this vector after the loop.*
+```{r}
+for (n in i) {if (n>1)
+{
+    vector<- append ("larger", vector)
+}else if (n==1){
+    vector <- append ("equal", vector)
+}else if (n<1){
+    vector <- append ("smaller", vector)
+}
+}
+print(vector)
+```
+*6.Extent a copy of the above modified loop in such a way, that the results are not saved in a vector but a list. Print the content of this list after the loop.*
+```{r}
+a<- list("larger", "equal", "smaller")
+for (n in i){
+if(n>1){
+print(a[1])
+}else if (n ==1){
+print (a[2])
+}else{
+print (a[3])
+}
+}
+```
+*7.Change the above modified loop in such a way, that the iteration is controlled by a lapply not by a for-loop. Save the returning information from the lapply function in a variable and print the content of this variable after the loop.*
+
+
+
+
+
