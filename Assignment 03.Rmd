@@ -1,0 +1,50 @@
+---
+title: "Assignment03"
+author: "Nadine Heubes"
+date: "28 11 2020"
+output: html_document
+---
+
+
+*1.Read the data provided in the Excel file and “isolate” the tabulated information into a data.frame class.*
+```{r}
+
+getwd()
+setwd("C:/Users/nheub/Documents/~edu/https-github.com-GeoMOER-Students-Space-mpg-data-analysis-2020-NHeubes/data")
+
+dat <- read.table("C:/Users/nheub/Documents/~edu/https-github.com-GeoMOER-Students-Space-mpg-data-analysis-2020-NHeubes/data/holzeinschlag.csv", header=TRUE, sep=";", dec=",")
+
+saveRDS(dat, file = "C:/Users/nheub/Documents/~edu/https-github.com-GeoMOER-Students-Space-mpg-data-analysis-2020-NHeubes/data/hessen_holzeinschlag.csv")
+
+str(dat)
+```
+*2.Create a simple visualization which gives a quick, temporally non explicit and descriptive statistical overview of the harvest by tree type and as a total over all trees (i.e. a similar kind of information as provided by the summary function).*
+```{r}
+head(dat)
+numc<- c("Eiche","Buche","Buntholz","Fichte","Kiefer", "Insgesamt")
+boxplot(dat[, numc], main="Holzeinschlag in Hessen von 1997-2014", xlab="Baumart", ylab="Holzeinschlag",col="brown", border="black")
+ 
+```
+
+
+*3. Create another visualization which - in the same figure panel - shows how each beech harvest over the time span is related to each of the oak, pine, spruce and colored wood harvests in a 2 by 2 grid (i.e. arrange the figures in a 2 columns and 2 rows layout).*
+```{r}
+par_org <- par()
+par(mfrow = c(2,2))
+
+plot(dat$Eiche~dat$Buche,xlab="Buche", ylab="Eiche", main="Buche/Eiche")
+plot(dat$Fichte~dat$Buche, xlab="Buche", ylab="Fichte", main="Buche/Fichte")
+plot(dat$Buntholz~dat$Buche, xlab="Buche", ylab="Buntholz", main="Buche/Buntholz")
+plot(dat$Kiefer~dat$Buche, xlab="Buche", ylab="Kiefer", main="Buche/Kiefer")
+
+
+```
+
+
+*4. Include your opinion on what could be the key message of these figures in two sentence max.*
+
+Bei steigendem Bucheinschlag steigt ebenfalls der Einschlag von Kiefer, Fichte, Eiche und Buntholz.
+
+
+
+
