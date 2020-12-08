@@ -1,0 +1,158 @@
+---
+title: "Assignment4"
+author: "Nadine Heubes"
+date: "3 12 2020"
+output: 
+html_document: default
+---
+
+```{r}
+#set working directory
+getwd()
+setwd("C:/Users/nheub/Documents/~edu/https-github.com-GeoMOER-Students-Space-mpg-data-analysis-2020-NHeubes/data")
+
+#load data
+
+fe<- read.table(file ="C:/Users/nheub/Documents/~edu/https-github.com-GeoMOER-Students-Space-mpg-data-analysis-2020-NHeubes/data/feldfruechte.txt", nrows=8925, skip=7, sep=";", dec=",", fill = TRUE)
+
+#set max.print to 1000000
+
+options(max.print = 1000000)
+
+str(fe)
+
+#change names of columns
+
+colnames(fe)<- c("Year", "ID", "Place", "Winterweizen", "Roggen und Wintermenggetreide", "Wintergerste", "Sommergerste","Hafer", "Triticale", "Kartoffel", "Zuckerrüben", "Winterraps", "Silomais")
+
+#converting data typs
+
+for(c in colnames(fe)[4:13]){
+    fe[, c][fe[, c] == "."] <- NA  
+    fe[, c] <- as.numeric(sub(",", ".", as.character(fe[, c])))
+}
+
+
+#converting wide to long format
+
+#install.packages("reshape2")
+library(reshape2)
+fe_long <- melt (fe, id.vars = c("Year", "ID", "Place", "Winterweizen", "Roggen und Wintermenggetreide", "Wintergerste", "Sommergerste","Hafer", "Triticale", "Kartoffel", "Zuckerrüben", "Winterraps", "Silomais"))
+
+head(fe_long)
+
+
+
+#Split multiple information within one column
+
+place <- strsplit(as.character(fe$Place), ",")
+head(place)
+max(sapply(place, length))
+
+place_df <- lapply(place, function(i){
+    p1 <- sub("^\\s+", "", i[1]) 
+    if(length(i) > 2){
+        p2 <- sub("^\\s+", "", i[2])
+        p3 <- sub("^\\s+", "", i[3])
+    } else if (length(i) > 1){
+        p2 <- sub("^\\s+", "", i[2])
+        p3 <- NA
+    } else {
+        p2 <- NA
+        p3 <- NA
+    }
+    data.frame(A = p1,
+               B = p2,
+               C = p3)
+})
+place_df <- do.call("rbind", place_df)
+place_df$ID <- fe$ID 
+place_df$Year <- fe$Year
+head(place_df)
+
+place_df[!is.na(place_df$C),] <- place_df[!is.na(place_df$C), c(1,3,2, 4, 5)]
+head(place_df)
+unique(fe$Place[is.na(place_df$B)])
+sum(is.na(place_df$B))
+
+#split into tree different columns and fill empty columns with"NA"
+
+place_df <- lapply(place, function(i){
+  p1 <- sub("^\\s+", "", i[1])  # Trim leading white spaces
+  if(length(i) > 2){
+    p2 <- sub("^\\s+", "", i[2])
+    p3 <- sub("^\\s+", "", i[3])
+  } else if (length(i) > 1){
+    p2 <- sub("^\\s+", "", i[2])
+    p3 <- NA
+  } else {
+    p2 <- NA
+    p3 <- NA
+  }
+  data.frame(A = p1,
+             B = p2,
+             C = p3)
+})
+
+
+place_df <- do.call("rbind", place_df)
+place_df$ID <- fe$ID 
+place_df$Year <- fe$Year
+
+
+#look at the different entries in column B and C
+
+unique(place_df[, 2])
+
+unique(place_df[, 3])
+
+unique(place_df$B[!is.na(place_df$C)])
+
+place_df[!is.na(place_df$C),] <- place_df[!is.na(place_df$C), c(1,3,2, 4, 5)]
+
+head(place_df)
+
+unique(fe$Place[is.na(place_df$B)])
+
+sum(is.na(place_df$B))
+
+for(r in seq(nrow(place_df))){
+  if(is.na(place_df$B[r]) &
+     grepl("kreis", tolower(place_df$A[r]))){
+    place_df$B[r] <- "Landkreis"
+  }
+}
+unique(fe_long$Place[is.na(place_df$B)])
+
+sum(is.na(place_df$B))
+
+head(place_df)
+
+place_df$B[is.na(place_df$B) & nchar(as.character(place_df$ID) == 2)] <- "Bundesland"
+place_df$B[place_df$ID == "DG"] <- "Land"
+head(place_df)
+
+#check if there are more NA's in B
+sum(is.na(place_df$B))
+
+
+#rename the columns A,B,C
+
+colnames(place_df)<- c("Region", "Verwaltungsebene", "Status", "ID", "Year")
+
+
+#merge the separated place information back into the original data frame
+#mergen nicht möglich, Reihenfolge ändern ID und Year oder Faktor in Charakter umwandeln 
+fe_long_final<- fe_long[,c(2, 1, 8,9,10,6,7,11,3,4,5,12,13)]
+
+#place-> Region, Verwaltungsebene, Status
+fe_long_final$Region <- place_df$Region
+fe_long_final$Verwaltungsebene <- place_df$Verwaltungsebene
+fe_long_final$Status <- place_df$Status
+#change order of columns
+fe_long_final<- fe_long_final[,c(1,2,9,14,15,16,3,4,5,6,7,8,10,11,12,13)]
+#delete "Place"
+fe_long_final$Place <- NULL
+#show some rows for illustration
+fe_long_final[c(10,100,500),]
+```
