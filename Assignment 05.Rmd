@@ -1,0 +1,60 @@
+---
+title: "Assignment05"
+author: "Nadine Heubes"
+date: "13 12 2020"
+output: html_document
+---
+
+***Please write an R markdown script which computes a linear regression model that relates the percentage recreation area (dependent variable) to the settlement area and visualize the relationship as a scatter plot with the linear modeled drawn in the same plot. Additionally compute a visualization which allows the assessment of the heteroscedasticity and the normal distribution of the residuals***
+```{r}
+lu<- readRDS("C:/Users/nheub/Documents/edu/https-github.com-GeoMOER-Students-Space-mpg-data-analysis-2020-NHeubes/data/lu_clean.rds")
+ind <- lu$Settlement
+dep <- lu$Recreation
+
+
+library(car)
+
+lmod <- lm(dep ~ ind, data = lu)
+plot(ind, dep,xlab="Settlement",ylab="Recreation",col="blue", main="Relationship recreation area & settlement area", las=1)
+regLine(lmod, col = "red")
+summary(lm(dep~ind))
+
+#normal distribution 
+qqnorm(rstandard(lmod))
+qqline(rstandard(lmod))
+
+#heteroscedasity
+plot(fitted.values(lmod), residuals(lmod))
+
+plot(lmod,which=1)
+
+
+
+```
+
+
+***Please write exactly one sentence which summarizes the key message of both the heteroscedasticity and normal distribution plot***
+
+There is no normal distribution since the points do not run close to the regression line and because of the increasing dispersion of the residuals, heteroscedasticity can be assumed.
+
+***Once you have described your data, please have a closer look on the normal distribution assessment. For that, please evaluate how often a normal distribution test on the residuals would reject it’s null-hypothesis if a regression model is not computed on the entire dataset but 100 regression models are computed on 100 sub-samples of the dataset. Each of the 100 sub-samples should contain 50 value pairs chosen randomly from the entire data set. Please state or visualize the result and discuss it with respect to sample design and the reliability of test results (three sentence max)***
+
+```{r}
+p_values <- NA
+
+for (j in seq(1, 100)) {
+  dep <- 0
+  ind <- 0
+  for (i in seq(1, 50)) {
+    x <- as.integer(runif(1, min = 1, max = 5250))
+    dep[i] <- lu$Recreation[x]
+    ind[i] <- lu$Settlement[x]
+  }
+
+model<- lm(dep~ind)
+s<- shapiro.test(model$residuals)
+p_values[j] <- s$p.value
+}
+plot(p_values, col="green", pch=20,main="p-values of submodels", xlab="number of values", ylab="significance of p-value" )
+abline(0.05,0, col="red")
+```
